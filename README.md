@@ -151,12 +151,23 @@ Tests are fully offline; live API responses are mocked via `respx` against captu
 
 ## Releasing
 
-1. Go to **Actions → release → Run workflow** in the GitHub UI.
-2. Enter the next version (e.g. `0.2.0`).
-3. The workflow bumps `__version__`, builds the package, commits, tags `v0.2.0`, and creates a GitHub Release.
-4. Publishing the release triggers the `publish` workflow, which attaches the built wheel and sdist as release assets.
+The version is derived from git tags via [`hatch-vcs`](https://github.com/ofek/hatch-vcs) — there is no `__version__` constant to bump.
 
-End-users can then `pip install` the wheel URL from the Release page.
+To cut a release:
+
+```bash
+gh release create v0.2.0 --generate-notes
+```
+
+That creates the tag and the GitHub Release in one shot, which fires the `publish` workflow. The workflow builds the wheel + sdist (whose versions are derived from the tag), verifies the built version matches the tag, and attaches them to the Release as assets.
+
+If you only want the tag (no release yet):
+
+```bash
+git tag v0.2.0
+git push origin v0.2.0
+# The publish workflow runs and creates a Release with auto-generated notes.
+```
 
 ## License
 

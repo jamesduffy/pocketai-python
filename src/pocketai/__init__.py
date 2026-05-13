@@ -1,5 +1,8 @@
 """Python client for the Pocket (heypocketai.com) Public API."""
 
+from importlib.metadata import PackageNotFoundError
+from importlib.metadata import version as _installed_version
+
 from pocketai._client import DEFAULT_BASE_URL
 from pocketai.async_client import AsyncPocket
 from pocketai.client import Pocket
@@ -24,7 +27,10 @@ from pocketai.models import (
     UploadUrl,
 )
 
-__version__ = "0.1.0"
+try:
+    __version__ = _installed_version("pocketai")
+except PackageNotFoundError:  # running from an un-installed source checkout
+    __version__ = "0.0.0+unknown"
 
 __all__ = [
     "DEFAULT_BASE_URL",

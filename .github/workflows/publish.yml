@@ -1,18 +1,27 @@
 name: publish
 
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - "v*"
   workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to (re)publish, e.g. v0.1.0"
+        required: true
+        type: string
 
 jobs:
-  build-and-attach:
+  build-and-release:
     runs-on: ubuntu-latest
     permissions:
-      contents: write   # required to upload assets to the release
+      contents: write   # create the GitHub Release and upload assets
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0          # hatch-vcs reads the version from git history
+          ref: ${{ github.event.inputs.tag || github.ref }}
 
       - uses: actions/setup-python@v5
         with:
@@ -23,29 +32,41 @@ jobs:
           python -m pip install --upgrade pip build
           python -m build
 
-      - name: Verify version matches release tag
-        if: github.event_name == 'release'
-        env:
-          TAG: ${{ github.event.release.tag_name }}
+      - name: Show built version
         run: |
-          pkg_version=$(python - <<'PY'
-          import pathlib, re
-          text = pathlib.Path("src/pocketai/__init__.py").read_text()
-          print(re.search(r'__version__\s*=\s*"([^"]+)"', text).group(1))
-          PY
-          )
-          expected="v${pkg_version}"
-          echo "package=${expected}  tag=${TAG}"
-          test "${TAG}" = "${expected}" || { echo "Tag ${TAG} does not match package version ${expected}"; exit 1; }
+          ls -1 dist/
+          python -c "from importlib.metadata import version; print('would-install version:', version('pocketai'))" \
+            || true
+
+      - name: Verify built version matches tag
+        env:
+          REF: ${{ github.event.inputs.tag || github.ref_name }}
+        run: |
+          # Extract the version from the wheel filename: pocketai-X.Y.Z-py3-none-any.whl
+          wheel=$(ls dist/pocketai-*.whl | head -1)
+          pkg_version=$(basename "$wheel" | sed -E 's/^pocketai-([^-]+)-.*/\1/')
+          expected_tag="v${pkg_version}"
+          echo "wheel=${wheel}  pkg_version=${pkg_version}  ref=${REF}"
+          test "${REF}" = "${expected_tag}" \
+            || { echo "Tag ${REF} does not match wheel version ${expected_tag}"; exit 1; }
 
       - uses: actions/upload-artifact@v4
         with:
           name: dist
           path: dist/
 
-      - name: Attach built artifacts to GitHub Release
-        if: github.event_name == 'release'
+      - name: Create or update GitHub Release with assets
         env:
           GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.inputs.tag || github.ref_name }}
         run: |
-          gh release upload "${{ github.event.release.tag_name }}" dist/*.whl dist/*.tar.gz --clobber
+          if gh release view "${TAG}" >/dev/null 2>&1; then
+            echo "Release ${TAG} already exists, uploading assets."
+            gh release upload "${TAG}" dist/*.whl dist/*.tar.gz --clobber
+          else
+            echo "Creating release ${TAG}."
+            gh release create "${TAG}" \
+              --title "${TAG}" \
+              --generate-notes \
+              dist/*.whl dist/*.tar.gz
+          fi
