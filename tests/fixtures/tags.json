@@ -1,0 +1,7 @@
+{
+  "success": true,
+  "data": [
+    {"id": "tag-1", "name": "planning", "color": "#ff0000", "usage_count": 5},
+    {"id": "tag-2", "name": "1-on-1", "color": "#00ff00", "usage_count": 12}
+  ]
+}

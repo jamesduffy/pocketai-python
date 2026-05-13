@@ -1,0 +1,9 @@
+{
+  "success": true,
+  "data": {
+    "recording_id": "33333333-3333-4333-8333-333333333333",
+    "s3_key": "user-id/2026-05-12/33333333-3333-4333-8333-333333333333.mp3",
+    "upload_url": "https://example-bucket.s3.amazonaws.com/upload.mp3?X-Amz-Signature=xyz",
+    "expires_in": 3600
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "success": true,
+  "data": {
+    "userProfile": {
+      "dynamicContext": ["Working on PR review tooling"],
+      "staticFacts": ["**Role:** Engineering leader"]
+    },
+    "relevantMemories": [
+      {
+        "content": "Transcript segment about sprint planning.",
+        "language": "en",
+        "metadata": {"source": "turbopuffer", "sources": ["transcript_segment"]},
+        "recordingDate": "2026-05-12T20:01:04Z",
+        "recordingId": "22222222-2222-4222-8222-222222222222",
+        "recordingTitle": "Project planning",
+        "relevanceScore": 7.35,
+        "speakers": "James",
+        "transcriptionId": "abc-123"
+      }
+    ],
+    "total": 1,
+    "timing": 482
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "success": true,
+  "data": {
+    "id": "11111111-1111-4111-8111-111111111111",
+    "title": "Sprint backlog review",
+    "duration": 3731,
+    "state": "completed",
+    "language": "en",
+    "recording_at": "2026-05-12T20:32:14Z",
+    "created_at": "2026-05-12T21:40:07Z",
+    "updated_at": "2026-05-12T21:51:37Z",
+    "tags": [],
+    "transcript": {
+      "metadata": {
+        "duration": 3729.91,
+        "language": "en",
+        "language_probability": 0.9,
+        "source": "wizper"
+      },
+      "segments": [
+        {
+          "start": 0.0,
+          "end": 12.5,
+          "text": "Let us start with the work in progress review.",
+          "originalText": "Let us start with the work in progress review."
+        },
+        {
+          "start": 12.5,
+          "end": 30.1,
+          "text": "First up: the database backup policy.",
+          "originalText": "First up: the database backup policy."
+        }
+      ]
+    }
+  }
+}

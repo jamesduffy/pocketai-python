@@ -1,0 +1,25 @@
+{
+  "success": true,
+  "data": {
+    "id": "11111111-1111-4111-8111-111111111111",
+    "title": "Sprint backlog review",
+    "duration": 3731,
+    "state": "completed",
+    "language": "en",
+    "recording_at": "2026-05-12T20:32:14Z",
+    "created_at": "2026-05-12T21:40:07Z",
+    "updated_at": "2026-05-12T21:51:37Z",
+    "tags": [],
+    "summarizations": {
+      "aa15c2d9-e69e-4f32-a096-797749412dd2": {
+        "id": "075267d7-8d14-4cd1-a714-cf853c7eeb27",
+        "summarizationId": "aa15c2d9-e69e-4f32-a096-797749412dd2",
+        "processingStatus": "completed",
+        "v2": {
+          "summary": {"markdown": "## Sprint review summary\n\nTopline notes..."},
+          "action_items": [{"text": "Close backup policy story today"}]
+        }
+      }
+    }
+  }
+}

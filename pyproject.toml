@@ -1,0 +1,91 @@
+[build-system]
+requires = ["hatchling>=1.18"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pocketai"
+dynamic = ["version"]
+description = "Python client for the Pocket (heypocketai.com) Public API."
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.9"
+authors = [
+    { name = "pocketai contributors" },
+]
+keywords = ["pocket", "heypocketai", "transcription", "meeting-notes", "api-client"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+]
+dependencies = [
+    "httpx>=0.25",
+    "pydantic>=2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4",
+    "pytest-asyncio>=0.23",
+    "respx>=0.20",
+    "mypy>=1.7",
+    "ruff>=0.4",
+    "build>=1.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/jamesduffy/pocketai-python"
+Documentation = "https://docs.heypocketai.com/docs/api"
+Issues = "https://github.com/jamesduffy/pocketai-python/issues"
+Source = "https://github.com/jamesduffy/pocketai-python"
+
+[tool.hatch.version]
+path = "src/pocketai/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pocketai"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/pocketai",
+    "tests",
+    "README.md",
+    "LICENSE",
+    "pyproject.toml",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+filterwarnings = ["error"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+files = ["src/pocketai"]
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
+disallow_untyped_decorators = false
+check_untyped_defs = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "B", "UP", "SIM", "RUF"]
+# Keep typing.Optional[X] / typing.Union[X, Y] so the package stays runtime-compatible
+# with Python 3.9, where ``X | Y`` annotations would fail outside of ``from __future__``.
+ignore = ["E501", "UP007", "UP045"]
