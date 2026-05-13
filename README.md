@@ -2,8 +2,18 @@
 
 An unofficial Python client for the [Pocket](https://heypocketai.com) Public API. Sync and async, fully typed, with first-class webhook signature verification.
 
+## Install
+
+Wheels are attached to each [GitHub Release](https://github.com/jamesduffy/pocketai-python/releases). Install the latest with:
+
 ```bash
-pip install pocketai
+pip install https://github.com/jamesduffy/pocketai-python/releases/latest/download/pocketai-0.1.0-py3-none-any.whl
+```
+
+Or install straight from a tag (pulls source and builds locally):
+
+```bash
+pip install "pocketai @ git+https://github.com/jamesduffy/pocketai-python.git@v0.1.0"
 ```
 
 ## Quickstart
@@ -115,6 +125,19 @@ The signature scheme is `HMAC-SHA256(secret, f"{timestamp}.{raw_body}")` returni
 
 Organization admin endpoints (members, templates, analytics, webhook management) are not yet covered — contributions welcome.
 
+## Examples
+
+Runnable scripts for common workflows live in [`examples/`](examples/):
+
+- **`list_recordings.py`** — paginate, filter by date, filter by tag
+- **`export_transcript.py`** — dump a recording's transcript to Markdown with timestamps
+- **`download_audio.py`** — stream the signed S3 URL to a local MP3
+- **`upload_recording.py`** — create an upload URL, `PUT` the bytes, poll until processed
+- **`search_recordings.py`** — semantic search across recordings and transcripts
+- **`async_parallel_fetch.py`** — fetch many transcripts concurrently with `AsyncPocket`
+- **`webhook_server.py`** — minimal Flask app verifying signatures and dispatching events
+- **`backup.py`** — full local backup of every recording (JSON + transcript + summary + audio), resumable across runs
+
 ## Development
 
 ```bash
@@ -125,6 +148,15 @@ ruff check src tests
 ```
 
 Tests are fully offline; live API responses are mocked via `respx` against captured response shapes.
+
+## Releasing
+
+1. Go to **Actions → release → Run workflow** in the GitHub UI.
+2. Enter the next version (e.g. `0.2.0`).
+3. The workflow bumps `__version__`, builds the package, commits, tags `v0.2.0`, and creates a GitHub Release.
+4. Publishing the release triggers the `publish` workflow, which attaches the built wheel and sdist as release assets.
+
+End-users can then `pip install` the wheel URL from the Release page.
 
 ## License
 

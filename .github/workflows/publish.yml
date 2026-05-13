@@ -6,8 +6,11 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-and-attach:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write   # required to upload assets to the release
+
     steps:
       - uses: actions/checkout@v4
 
@@ -20,25 +23,29 @@ jobs:
           python -m pip install --upgrade pip build
           python -m build
 
+      - name: Verify version matches release tag
+        if: github.event_name == 'release'
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          pkg_version=$(python - <<'PY'
+          import pathlib, re
+          text = pathlib.Path("src/pocketai/__init__.py").read_text()
+          print(re.search(r'__version__\s*=\s*"([^"]+)"', text).group(1))
+          PY
+          )
+          expected="v${pkg_version}"
+          echo "package=${expected}  tag=${TAG}"
+          test "${TAG}" = "${expected}" || { echo "Tag ${TAG} does not match package version ${expected}"; exit 1; }
+
       - uses: actions/upload-artifact@v4
         with:
           name: dist
           path: dist/
 
-  publish:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: pypi
-      url: https://pypi.org/p/pocketai
-    permissions:
-      id-token: write
-
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: dist
-          path: dist/
-
-      - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+      - name: Attach built artifacts to GitHub Release
+        if: github.event_name == 'release'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload "${{ github.event.release.tag_name }}" dist/*.whl dist/*.tar.gz --clobber
